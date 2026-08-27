@@ -4,6 +4,10 @@ SWARM FORGE v0.3 is a portrait-first, 90-second browser survival game. Move a ne
 
 The game runs entirely in the browser with cohesive procedural graphics and generated Web Audio effects. It has no backend, accounts, paid services, analytics, or external asset requirements.
 
+## Live demo
+
+Play the current public build at [songeon0617.github.io/swarm-forge](https://songeon0617.github.io/swarm-forge/). Portrait orientation is recommended on mobile.
+
 ## Controls
 
 - Keyboard: WASD or Arrow keys
@@ -42,6 +46,10 @@ pnpm build
 ```
 
 The production output is written to `dist/` and can be deployed as static files to itch.io, GitHub Pages, or Cloudflare Pages.
+
+## Deployment
+
+Pushes to `main` are validated, built, and deployed to GitHub Pages by `.github/workflows/deploy-pages.yml`. The workflow uses GitHub's official Pages actions and the package-manager version pinned in `package.json`. Vite emits relative asset URLs so the build works under the `/swarm-forge/` project path.
 
 ## Architecture summary
 
