@@ -34,3 +34,12 @@
 ## Best next iteration
 
 Play five complete runs at 390 × 844 and record death time, level at 30/60/90 seconds, upgrade selections, peak enemy count, and final-15-second readability. Use those measurements for a focused game-feel and balance pass before adding content.
+
+## Architecture checkpoint
+
+- Extracted keyboard/touch handling from `GameScene` into a replaceable input controller.
+- Extracted persistent HUD and level-up card presentation into focused UI modules.
+- Added an injectable spawn-point provider while preserving current arena spawning.
+- Removed obsolete runner-era balance values and centralized difficulty, XP attraction, upgrade effects, playfield, and spawn tuning.
+- Reduced `GameScene` while deliberately retaining combat coordination and run lifecycle until v0.2 directional rules are defined.
+- Documented retained and changed components for the one-direction survival-defense transition in `ARCHITECTURE_REVIEW.md`.

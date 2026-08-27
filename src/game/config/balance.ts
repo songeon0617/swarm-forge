@@ -1,30 +1,10 @@
 export const GAME_WIDTH = 390;
 export const GAME_HEIGHT = 844;
-export const PLAYER_Y = 675;
-export const TRACK_LEFT = 35;
-export const TRACK_RIGHT = 355;
 
-export const BALANCE = {
-  startRifles: 4,
-  courseSpeed: 64,
-  renderedDroneCap: 48,
-  targetRunSeconds: 72,
-  attackRange: 330,
-  rifleDamage: 1.15,
-  laserDamage: 4.8,
-  rifleFireMs: 315,
-  laserFireMs: 760,
-  enemyContactDps: 0.32,
-  formationSpacingX: 22,
-  formationSpacingY: 19,
-  maxColumns: 9,
-} as const;
-
-export const ENEMY_STATS = {
-  grunt: { hp: 10, damage: 1, radius: 13 },
-  heavy: { hp: 32, damage: 3, radius: 20 },
-  turret: { hp: 22, damage: 2, radius: 17 },
-  boss: { hp: 1600, damage: 5, radius: 55 },
+export const SURVIVAL_LAYOUT = {
+  playfield: { left: 12, top: 78, right: 12, bottom: 12 },
+  spawnPadding: 30,
+  packOffset: 24,
 } as const;
 
 export const SURVIVAL_BALANCE = {
@@ -35,10 +15,37 @@ export const SURVIVAL_BALANCE = {
     invulnerabilityMs: 550,
     pickupRadius: 58,
   },
-  autoBolt: { damage: 12, cooldownMs: 520, speed: 520, projectileCount: 1, maxLevel: 5 },
-  orbitBlade: { damage: 9, count: 1, rotationSpeed: 2.1, radius: 58, hitCooldownMs: 380, maxLevel: 5 },
-  shockPulse: { damage: 18, cooldownMs: 3600, radius: 105, maxLevel: 5 },
+  autoBolt: { damage: 12, cooldownMs: 520, speed: 520, projectileCount: 1 },
+  orbitBlade: { damage: 9, count: 1, rotationSpeed: 2.1, radius: 58, hitCooldownMs: 380 },
+  shockPulse: { damage: 18, cooldownMs: 3600, radius: 105 },
   spawn: { startIntervalMs: 920, endIntervalMs: 210, maxEnemies: 125 },
+  difficulty: {
+    hpGrowth: 1.5,
+    hpExponent: 1.35,
+    speedGrowth: 0.22,
+    runnerRollThreshold: 0.48,
+    tankRollThreshold: 0.76,
+    packTwoAt: 48,
+    packThreeAt: 75,
+  },
+  experience: {
+    attractionRadiusMultiplier: 2.4,
+    innerPullPerMs: 0.022,
+    outerPullPerMs: 0.009,
+    collectDistance: 18,
+  },
+  upgrades: {
+    defaultMaxLevel: 5,
+    boltCountMaxLevel: 3,
+    boltDamageMultiplier: 1.25,
+    boltCooldownMultiplier: 0.8,
+    bladeSpeedMultiplier: 1.15,
+    pulseRadiusMultiplier: 1.2,
+    pulseDamageMultiplier: 1.3,
+    moveSpeedMultiplier: 1.1,
+    maxHpRatio: 0.2,
+    pickupRadiusMultiplier: 1.25,
+  },
 } as const;
 
 export const SURVIVAL_ENEMIES = {

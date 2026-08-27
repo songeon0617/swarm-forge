@@ -9,17 +9,21 @@
 - `src/main.ts` — Phaser bootstrap, portrait scaling, and zero-gravity Arcade Physics.
 - `src/game/config/balance.ts` — all primary player, weapon, enemy, spawn, and run-duration tuning.
 - `src/game/scenes/GameScene.ts` — system orchestration, input, collisions, HUD, choice UI, results, and restart.
+- `src/game/input/PlayerInputController.ts` — keyboard and move-toward-pointer input policy; replaceable for constrained mobile controls.
 - `src/game/entities/Player.ts` — movement, HP, invulnerability, and mutable player stats.
 - `src/game/enemies/Enemy.ts` — shared enemy state, pursuit, HP, and contact damage.
 - `src/game/weapons/AutoBolt.ts` — nearest-target projectile weapon.
 - `src/game/weapons/OrbitBlade.ts` — player-centered orbiting contact weapon.
 - `src/game/weapons/ShockPulse.ts` — periodic area damage weapon.
 - `src/game/systems/EnemySpawner.ts` — bounded off-screen spawning and pack creation.
+- `src/game/spawning/SpawnPointProvider.ts` — injectable arena spawn geometry; the main seam for one-direction v0.2 spawning.
 - `src/game/systems/Difficulty.ts` — deterministic pacing curve and enemy-type selection rules.
 - `src/game/systems/ExperienceSystem.ts` — XP drops, attraction, and collection visuals.
 - `src/game/systems/XpProgression.ts` — Phaser-independent XP requirement formula.
 - `src/game/systems/RunRules.ts` — Phaser-independent victory and defeat rules.
 - `src/game/upgrades/SurvivalUpgradeSystem.ts` — upgrade definitions, unique three-choice selection, caps, and application.
+- `src/game/ui/SurvivalHud.ts` — persistent HUD construction and updates.
+- `src/game/ui/UpgradeOverlay.ts` — three-card level-up presentation with an independent single-selection lock.
 - `src/game/render/` — generated placeholder textures and short-lived effects.
 
 ## Performance model
@@ -29,3 +33,5 @@ Enemy count is capped at 125. Auto Bolt uses short-lived logical projectiles, Or
 ## Main tuning locations
 
 Start in `src/game/config/balance.ts`. Difficulty interpolation and phase thresholds live in `src/game/systems/Difficulty.ts`; upgrade descriptions and maximum levels live in `src/game/upgrades/SurvivalUpgradeSystem.ts`.
+
+See `ARCHITECTURE_REVIEW.md` for the current reuse plan and the intentionally deferred v0.2 changes.

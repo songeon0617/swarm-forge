@@ -1,4 +1,5 @@
 import type { Player } from '../entities/Player';
+import { SURVIVAL_BALANCE } from '../config/balance';
 import type { UpgradeLevels, WeaponStats } from '../survivalTypes';
 
 export interface UpgradeChoice {
@@ -9,16 +10,66 @@ export interface UpgradeChoice {
 }
 
 export const UPGRADE_POOL: UpgradeChoice[] = [
-  { id: 'boltDamage', title: 'BOLT OVERCHARGE', description: 'Auto Bolt damage +25%', maxLevel: 5 },
-  { id: 'boltSpeed', title: 'RAPID CAPACITOR', description: 'Auto Bolt attack speed +20%', maxLevel: 5 },
-  { id: 'boltCount', title: 'TWIN LINK', description: 'Auto Bolt projectile +1', maxLevel: 3 },
-  { id: 'bladeCount', title: 'EXTRA BLADE', description: 'Orbit Blade count +1', maxLevel: 5 },
-  { id: 'bladeSpeed', title: 'ORBIT DRIVE', description: 'Blade rotation speed +15%', maxLevel: 5 },
-  { id: 'pulseRadius', title: 'WIDE SHOCK', description: 'Shock Pulse radius +20%', maxLevel: 5 },
-  { id: 'pulseDamage', title: 'PULSE AMPLIFIER', description: 'Shock Pulse damage +30%', maxLevel: 5 },
-  { id: 'moveSpeed', title: 'VECTOR THRUST', description: 'Movement speed +10%', maxLevel: 5 },
-  { id: 'maxHp', title: 'REINFORCED CORE', description: 'Max HP +20% and heal', maxLevel: 5 },
-  { id: 'pickupRadius', title: 'MAGNETIC FIELD', description: 'XP pickup radius +25%', maxLevel: 5 },
+  {
+    id: 'boltDamage',
+    title: 'BOLT OVERCHARGE',
+    description: 'Auto Bolt damage +25%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'boltSpeed',
+    title: 'RAPID CAPACITOR',
+    description: 'Auto Bolt attack speed +20%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'boltCount',
+    title: 'TWIN LINK',
+    description: 'Auto Bolt projectile +1',
+    maxLevel: SURVIVAL_BALANCE.upgrades.boltCountMaxLevel,
+  },
+  {
+    id: 'bladeCount',
+    title: 'EXTRA BLADE',
+    description: 'Orbit Blade count +1',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'bladeSpeed',
+    title: 'ORBIT DRIVE',
+    description: 'Blade rotation speed +15%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'pulseRadius',
+    title: 'WIDE SHOCK',
+    description: 'Shock Pulse radius +20%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'pulseDamage',
+    title: 'PULSE AMPLIFIER',
+    description: 'Shock Pulse damage +30%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'moveSpeed',
+    title: 'VECTOR THRUST',
+    description: 'Movement speed +10%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'maxHp',
+    title: 'REINFORCED CORE',
+    description: 'Max HP +20% and heal',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
+  {
+    id: 'pickupRadius',
+    title: 'MAGNETIC FIELD',
+    description: 'XP pickup radius +25%',
+    maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
+  },
 ];
 
 export function createUpgradeLevels(): UpgradeLevels {
@@ -61,10 +112,10 @@ export function applySurvivalUpgrade(
   levels[choice.id] += 1;
   switch (choice.id) {
     case 'boltDamage':
-      weapons.boltDamage *= 1.25;
+      weapons.boltDamage *= SURVIVAL_BALANCE.upgrades.boltDamageMultiplier;
       break;
     case 'boltSpeed':
-      weapons.boltCooldownMs *= 0.8;
+      weapons.boltCooldownMs *= SURVIVAL_BALANCE.upgrades.boltCooldownMultiplier;
       break;
     case 'boltCount':
       weapons.boltCount += 1;
@@ -73,22 +124,22 @@ export function applySurvivalUpgrade(
       weapons.bladeCount += 1;
       break;
     case 'bladeSpeed':
-      weapons.bladeSpeed *= 1.15;
+      weapons.bladeSpeed *= SURVIVAL_BALANCE.upgrades.bladeSpeedMultiplier;
       break;
     case 'pulseRadius':
-      weapons.pulseRadius *= 1.2;
+      weapons.pulseRadius *= SURVIVAL_BALANCE.upgrades.pulseRadiusMultiplier;
       break;
     case 'pulseDamage':
-      weapons.pulseDamage *= 1.3;
+      weapons.pulseDamage *= SURVIVAL_BALANCE.upgrades.pulseDamageMultiplier;
       break;
     case 'moveSpeed':
-      player.stats.moveSpeed *= 1.1;
+      player.stats.moveSpeed *= SURVIVAL_BALANCE.upgrades.moveSpeedMultiplier;
       break;
     case 'maxHp':
-      player.increaseMaxHp(0.2);
+      player.increaseMaxHp(SURVIVAL_BALANCE.upgrades.maxHpRatio);
       break;
     case 'pickupRadius':
-      player.stats.pickupRadius *= 1.25;
+      player.stats.pickupRadius *= SURVIVAL_BALANCE.upgrades.pickupRadiusMultiplier;
       break;
   }
 }

@@ -1,15 +1,22 @@
 import Phaser from 'phaser';
 import { SURVIVAL_BALANCE, SURVIVAL_ENEMIES } from '../config/balance';
 import { Enemy } from '../enemies/Enemy';
+import { createArenaSpawnPoint, type SpawnPointProvider } from '../spawning/SpawnPointProvider';
 import { chooseEnemyType, difficultyAt } from './Difficulty';
 
 export class EnemySpawner {
   private nextSpawnAt = 0;
+  private readonly random: () => number;
+  private readonly spawnPoint: SpawnPointProvider;
 
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly enemies: Enemy[],
-  ) {}
+    options: { random?: () => number; spawnPoint?: SpawnPointProvider } = {},
+  ) {
+    this.random = options.random ?? Math.random;
+    this.spawnPoint = options.spawnPoint ?? createArenaSpawnPoint;
+  }
 
   update(time: number, elapsedSeconds: number): Enemy[] {
     if (time < this.nextSpawnAt || this.enemies.length >= SURVIVAL_BALANCE.spawn.maxEnemies) return [];
@@ -18,9 +25,9 @@ export class EnemySpawner {
     const spawned: Enemy[] = [];
     for (let index = 0; index < difficulty.packSize; index += 1) {
       if (this.enemies.length + spawned.length >= SURVIVAL_BALANCE.spawn.maxEnemies) break;
-      const type = chooseEnemyType(elapsedSeconds, Math.random());
+      const type = chooseEnemyType(elapsedSeconds, this.random());
       const base = SURVIVAL_ENEMIES[type];
-      const point = this.spawnPoint(index * 24);
+      const point = this.spawnPoint(index, this.random);
       spawned.push(
         new Enemy(this.scene, point.x, point.y, type, {
           hp: Math.round(base.hp * difficulty.hpMultiplier),
@@ -32,13 +39,5 @@ export class EnemySpawner {
       );
     }
     return spawned;
-  }
-
-  private spawnPoint(offset: number): Phaser.Math.Vector2 {
-    const edge = Phaser.Math.Between(0, 3);
-    if (edge === 0) return new Phaser.Math.Vector2(Phaser.Math.Between(20, 370), -30 - offset);
-    if (edge === 1) return new Phaser.Math.Vector2(420 + offset, Phaser.Math.Between(90, 820));
-    if (edge === 2) return new Phaser.Math.Vector2(Phaser.Math.Between(20, 370), 874 + offset);
-    return new Phaser.Math.Vector2(-30 - offset, Phaser.Math.Between(90, 820));
   }
 }

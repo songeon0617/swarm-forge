@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SURVIVAL_BALANCE } from '../config/balance';
 import type { Player } from '../entities/Player';
 
 interface XpOrb {
@@ -22,12 +23,15 @@ export class ExperienceSystem {
     for (let index = this.orbs.length - 1; index >= 0; index -= 1) {
       const orb = this.orbs[index];
       const distance = Phaser.Math.Distance.Between(orb.sprite.x, orb.sprite.y, player.x, player.y);
-      if (distance < player.stats.pickupRadius * 2.4) {
-        const speed = distance < player.stats.pickupRadius ? 0.022 : 0.009;
+      if (distance < player.stats.pickupRadius * SURVIVAL_BALANCE.experience.attractionRadiusMultiplier) {
+        const speed =
+          distance < player.stats.pickupRadius
+            ? SURVIVAL_BALANCE.experience.innerPullPerMs
+            : SURVIVAL_BALANCE.experience.outerPullPerMs;
         orb.sprite.x = Phaser.Math.Linear(orb.sprite.x, player.x, Math.min(1, delta * speed));
         orb.sprite.y = Phaser.Math.Linear(orb.sprite.y, player.y, Math.min(1, delta * speed));
       }
-      if (distance < 18) {
+      if (distance < SURVIVAL_BALANCE.experience.collectDistance) {
         collected += orb.value;
         orb.sprite.destroy();
         this.orbs.splice(index, 1);

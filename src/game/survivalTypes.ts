@@ -1,5 +1,4 @@
 export type SurvivalEnemyType = 'grunt' | 'runner' | 'tank';
-export type WeaponId = 'autoBolt' | 'orbitBlade' | 'shockPulse';
 
 export interface PlayerStats {
   maxHp: number;

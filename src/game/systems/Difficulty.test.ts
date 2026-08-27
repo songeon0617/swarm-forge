@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SURVIVAL_BALANCE, SURVIVAL_ENEMIES } from '../config/balance';
 import { chooseEnemyType, difficultyAt } from './Difficulty';
 
 describe('difficulty scaling', () => {
@@ -13,8 +14,14 @@ describe('difficulty scaling', () => {
   });
 
   it('unlocks runners and tanks only in their intended phases', () => {
-    expect(chooseEnemyType(20, 0.99)).toBe('grunt');
-    expect(chooseEnemyType(40, 0.9)).toBe('runner');
-    expect(chooseEnemyType(70, 0.9)).toBe('tank');
+    expect(chooseEnemyType(SURVIVAL_ENEMIES.runner.unlockAt - 1, 0.99)).toBe('grunt');
+    expect(
+      chooseEnemyType(SURVIVAL_ENEMIES.runner.unlockAt, SURVIVAL_BALANCE.difficulty.runnerRollThreshold + 0.01),
+    ).toBe('runner');
+    expect(chooseEnemyType(SURVIVAL_ENEMIES.tank.unlockAt, SURVIVAL_BALANCE.difficulty.tankRollThreshold + 0.01)).toBe(
+      'tank',
+    );
+    expect(difficultyAt(SURVIVAL_ENEMIES.runner.unlockAt).availableTypes).toContain('runner');
+    expect(difficultyAt(SURVIVAL_ENEMIES.tank.unlockAt).availableTypes).toContain('tank');
   });
 });
