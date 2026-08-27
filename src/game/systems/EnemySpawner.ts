@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { SURVIVAL_BALANCE, SURVIVAL_ENEMIES } from '../config/balance';
 import { Enemy } from '../enemies/Enemy';
-import { createArenaSpawnPoint, type SpawnPointProvider } from '../spawning/SpawnPointProvider';
+import { createRightEdgeSpawnPoint, type SpawnPointProvider } from '../spawning/SpawnPointProvider';
 import { chooseEnemyType, difficultyAt } from './Difficulty';
 
 export class EnemySpawner {
@@ -15,7 +15,7 @@ export class EnemySpawner {
     options: { random?: () => number; spawnPoint?: SpawnPointProvider } = {},
   ) {
     this.random = options.random ?? Math.random;
-    this.spawnPoint = options.spawnPoint ?? createArenaSpawnPoint;
+    this.spawnPoint = options.spawnPoint ?? createRightEdgeSpawnPoint;
   }
 
   update(time: number, elapsedSeconds: number): Enemy[] {

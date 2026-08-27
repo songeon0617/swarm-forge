@@ -1,7 +1,11 @@
-import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH, SURVIVAL_LAYOUT } from '../config/balance';
 
-export type SpawnPointProvider = (packIndex: number, random: () => number) => Phaser.Math.Vector2;
+export interface SpawnPoint {
+  x: number;
+  y: number;
+}
+
+export type SpawnPointProvider = (packIndex: number, random: () => number) => SpawnPoint;
 
 function between(min: number, max: number, random: () => number): number {
   return Math.round(min + (max - min) * random());
@@ -20,9 +24,13 @@ export const createArenaSpawnPoint: SpawnPointProvider = (packIndex, random) => 
     GAME_HEIGHT - SURVIVAL_LAYOUT.playfield.bottom,
     random,
   );
-  if (edge === 0) return new Phaser.Math.Vector2(horizontalPosition, -SURVIVAL_LAYOUT.spawnPadding - offset);
-  if (edge === 1) return new Phaser.Math.Vector2(GAME_WIDTH + SURVIVAL_LAYOUT.spawnPadding + offset, verticalPosition);
-  if (edge === 2)
-    return new Phaser.Math.Vector2(horizontalPosition, GAME_HEIGHT + SURVIVAL_LAYOUT.spawnPadding + offset);
-  return new Phaser.Math.Vector2(-SURVIVAL_LAYOUT.spawnPadding - offset, verticalPosition);
+  if (edge === 0) return { x: horizontalPosition, y: -SURVIVAL_LAYOUT.spawnPadding - offset };
+  if (edge === 1) return { x: GAME_WIDTH + SURVIVAL_LAYOUT.spawnPadding + offset, y: verticalPosition };
+  if (edge === 2) return { x: horizontalPosition, y: GAME_HEIGHT + SURVIVAL_LAYOUT.spawnPadding + offset };
+  return { x: -SURVIVAL_LAYOUT.spawnPadding - offset, y: verticalPosition };
 };
+
+export const createRightEdgeSpawnPoint: SpawnPointProvider = (packIndex, random) => ({
+  x: GAME_WIDTH + SURVIVAL_LAYOUT.spawnPadding + packIndex * SURVIVAL_LAYOUT.packOffset,
+  y: between(SURVIVAL_LAYOUT.playfield.top, GAME_HEIGHT - SURVIVAL_LAYOUT.playfield.bottom, random),
+});
