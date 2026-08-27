@@ -35,6 +35,10 @@ body {
   inset: 0;
 }
 
+#game-shell {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
 #game canvas {
   display: block;
   margin: 0 auto;

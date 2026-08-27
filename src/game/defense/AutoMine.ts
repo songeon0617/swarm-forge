@@ -35,11 +35,15 @@ export class AutoMine {
     }
     for (let index = this.mines.length - 1; index >= 0; index -= 1) {
       const mine = this.mines[index];
-      const triggered = enemies.some((enemy) => {
-        if (!enemy.active) return false;
+      let triggered = false;
+      for (const enemy of enemies) {
+        if (!enemy.active) continue;
         const triggerDistance = SURVIVAL_BALANCE.mine.triggerRadius + enemy.displayWidth * 0.35;
-        return Phaser.Math.Distance.Squared(mine.x, mine.y, enemy.x, enemy.y) <= triggerDistance * triggerDistance;
-      });
+        if (Phaser.Math.Distance.Squared(mine.x, mine.y, enemy.x, enemy.y) <= triggerDistance * triggerDistance) {
+          triggered = true;
+          break;
+        }
+      }
       if (!triggered) continue;
       this.explode(mine, enemies, onHit);
       this.mines.splice(index, 1);

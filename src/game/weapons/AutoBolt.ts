@@ -24,19 +24,23 @@ export class AutoBolt {
     player: Player,
     enemies: Enemy[],
     onHit: (enemy: Enemy, damage: number) => void,
+    onFire?: () => void,
   ): void {
-    const living = enemies.filter((enemy) => enemy.active);
-    if (living.length > 0 && time - this.lastShotAt >= this.stats.boltCooldownMs) {
-      this.lastShotAt = time;
-      const sorted = living.sort(
-        (a, b) =>
-          Phaser.Math.Distance.Squared(player.x, player.y, a.x, a.y) -
-          Phaser.Math.Distance.Squared(player.x, player.y, b.x, b.y),
-      );
-      for (let index = 0; index < this.stats.boltCount; index += 1) {
-        const target = sorted[index % sorted.length];
-        const sprite = this.scene.add.sprite(player.x, player.y, 'survivor-bolt').setDepth(25);
-        this.bolts.push({ sprite, target, damage: this.stats.boltDamage });
+    if (time - this.lastShotAt >= this.stats.boltCooldownMs) {
+      const living = enemies.filter((enemy) => enemy.active);
+      if (living.length > 0) {
+        this.lastShotAt = time;
+        const sorted = living.sort(
+          (a, b) =>
+            Phaser.Math.Distance.Squared(player.x, player.y, a.x, a.y) -
+            Phaser.Math.Distance.Squared(player.x, player.y, b.x, b.y),
+        );
+        for (let index = 0; index < this.stats.boltCount; index += 1) {
+          const target = sorted[index % sorted.length];
+          const sprite = this.scene.add.sprite(player.x, player.y, 'survivor-bolt').setDepth(25);
+          this.bolts.push({ sprite, target, damage: this.stats.boltDamage });
+        }
+        onFire?.();
       }
     }
 

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { AudioFeedback } from '../audio/AudioFeedback';
 import { SURVIVAL_BALANCE, SURVIVAL_LAYOUT, GAME_HEIGHT, GAME_WIDTH } from '../config/balance';
 import { AutoMine } from '../defense/AutoMine';
 import { AutoTurret } from '../defense/AutoTurret';
@@ -47,6 +48,7 @@ export class GameScene extends Phaser.Scene {
   private isChoosingUpgrade = false;
   private choiceOverlay?: Phaser.GameObjects.Container;
   private grid!: Phaser.GameObjects.TileSprite;
+  private audioFeedback!: AudioFeedback;
 
   constructor() {
     super('game');
@@ -97,6 +99,7 @@ export class GameScene extends Phaser.Scene {
     this.autoTurret = new AutoTurret(this, this.weaponStats);
     this.autoMine = new AutoMine(this, this.weaponStats);
     this.inputController = new PlayerInputController(this);
+    this.audioFeedback = new AudioFeedback(this);
     this.hud = new SurvivalHud(this);
     this.showOpeningPrompt();
     this.cameras.main.fadeIn(280, 2, 6, 16);
@@ -165,14 +168,36 @@ export class GameScene extends Phaser.Scene {
       const offsetY = enemy.y - this.player.y;
       if (offsetX * offsetX + offsetY * offsetY < contactDistance * contactDistance) this.hitPlayer(enemy, time);
     });
-    this.autoBolt.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
-    this.orbitBlade.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
-    this.shockPulse.update(time, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
-    this.autoTurret.update(time, delta, this.player, this.enemies, (enemy, damage, sourceX, sourceY) =>
-      this.damageEnemy(enemy, damage, sourceX, sourceY),
+    this.autoBolt.update(
+      time,
+      delta,
+      this.player,
+      this.enemies,
+      (enemy, damage) => this.damageEnemy(enemy, damage),
+      () => this.audioFeedback.shoot(),
     );
-    this.autoMine.update(time, this.player, this.enemies, (enemy, damage, sourceX, sourceY) =>
-      this.damageEnemy(enemy, damage, sourceX, sourceY),
+    this.orbitBlade.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
+    this.shockPulse.update(
+      time,
+      this.player,
+      this.enemies,
+      (enemy, damage) => this.damageEnemy(enemy, damage),
+      () => this.audioFeedback.explosion(),
+    );
+    this.autoTurret.update(
+      time,
+      delta,
+      this.player,
+      this.enemies,
+      (enemy, damage, sourceX, sourceY) => this.damageEnemy(enemy, damage, sourceX, sourceY),
+      () => this.audioFeedback.turret(),
+    );
+    this.autoMine.update(
+      time,
+      this.player,
+      this.enemies,
+      (enemy, damage, sourceX, sourceY) => this.damageEnemy(enemy, damage, sourceX, sourceY),
+      () => this.audioFeedback.explosion(),
     );
     this.pruneDefeatedEnemies();
     const collectedXp = this.experience.update(this.player, delta);
@@ -188,6 +213,7 @@ export class GameScene extends Phaser.Scene {
   private hitPlayer(enemy: Enemy, time: number): void {
     if (!this.player.takeDamage(enemy.contactDamage, time, SURVIVAL_BALANCE.player.invulnerabilityMs)) return;
     this.player.setTintFill(0xffffff);
+    this.audioFeedback.hit();
     this.time.delayedCall(90, () => this.player.active && this.player.clearTint());
     this.cameras.main.shake(130, 0.008);
     burst(this, this.player.x, this.player.y, MAGENTA, 10, 45);
@@ -198,6 +224,7 @@ export class GameScene extends Phaser.Scene {
 
   private damageEnemy(enemy: Enemy, amount: number, sourceX = this.player.x, sourceY = this.player.y): void {
     if (!enemy.active) return;
+    this.audioFeedback.hit();
     if (!enemy.damage(amount)) {
       enemy.showHitFeedback(this.time.now, sourceX, sourceY);
       return;
@@ -209,7 +236,7 @@ export class GameScene extends Phaser.Scene {
       enemy.x,
       enemy.y,
       enemy.enemyType === 'tank' ? 0xff8338 : MAGENTA,
-      enemy.enemyType === 'tank' ? 18 : 9,
+      enemy.enemyType === 'tank' ? 10 : 5,
       enemy.enemyType === 'tank' ? 68 : 38,
     );
     enemy.playDeath();
@@ -251,6 +278,7 @@ export class GameScene extends Phaser.Scene {
     this.choiceOverlay = undefined;
     this.physics.resume();
     this.inputController.setEnabled(true);
+    this.audioFeedback.levelUp();
     burst(this, this.player.x, this.player.y, 0x8dffdf, 22, 80);
     floatText(this, this.player.x, this.player.y - 42, choice.title, '#baffee', 16);
     this.updateHud();
@@ -266,6 +294,8 @@ export class GameScene extends Phaser.Scene {
     this.inputController.setEnabled(false);
     this.player.setVelocity(0, 0);
     this.physics.pause();
+    if (victory) this.audioFeedback.victory();
+    else this.audioFeedback.death();
     const overlay = this.add.container(0, 0).setDepth(180);
     overlay.add(
       this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x01040c, 0.88).setInteractive(),
@@ -327,6 +357,7 @@ export class GameScene extends Phaser.Scene {
     this.experience?.destroy();
     this.inputController?.destroy();
     this.hud?.destroy();
+    this.audioFeedback?.destroy();
     this.enemies.splice(0).forEach((enemy) => enemy.destroy());
   }
 }
