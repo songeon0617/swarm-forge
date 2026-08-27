@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { SURVIVAL_BALANCE } from '../config/balance';
+import { approach } from '../movement/MovementMath';
 import type { PlayerStats } from '../survivalTypes';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -20,12 +22,31 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(30).setCollideWorldBounds(true).setCircle(14, 4, 4);
   }
 
-  move(directionX: number, directionY: number): void {
-    const direction = new Phaser.Math.Vector2(directionX, directionY);
-    if (direction.lengthSq() > 1) direction.normalize();
-    this.setVelocity(direction.x * this.stats.moveSpeed, direction.y * this.stats.moveSpeed);
-    if (direction.lengthSq() > 0)
-      this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, direction.angle() + Math.PI / 2, 0.15);
+  move(directionX: number, directionY: number, delta: number): void {
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    const magnitude = Math.hypot(directionX, directionY);
+    const normalizedX = magnitude > 1 ? directionX / magnitude : directionX;
+    const normalizedY = magnitude > 1 ? directionY / magnitude : directionY;
+    const hasInput = magnitude > 0;
+    const targetVelocityX = normalizedX * this.stats.moveSpeed;
+    const targetVelocityY = normalizedY * this.stats.moveSpeed;
+    const acceleration = hasInput ? SURVIVAL_BALANCE.player.acceleration : SURVIVAL_BALANCE.player.deceleration;
+    const clampedDelta = Math.min(delta, SURVIVAL_BALANCE.movement.maxDeltaMs);
+    const maxChange = (acceleration * clampedDelta) / 1000;
+
+    this.setVelocity(
+      approach(body.velocity.x, targetVelocityX, maxChange),
+      approach(body.velocity.y, targetVelocityY, maxChange),
+    );
+    if (body.velocity.length() > this.stats.moveSpeed) body.velocity.setLength(this.stats.moveSpeed);
+    if (hasInput) {
+      const targetRotation = Math.atan2(normalizedY, normalizedX) + Math.PI / 2;
+      this.rotation = Phaser.Math.Angle.RotateTo(
+        this.rotation,
+        targetRotation,
+        SURVIVAL_BALANCE.player.turnSpeed * (clampedDelta / 1000),
+      );
+    }
   }
 
   takeDamage(amount: number, time: number, invulnerabilityMs: number): boolean {

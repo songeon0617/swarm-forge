@@ -152,16 +152,17 @@ export class GameScene extends Phaser.Scene {
     if (this.runEnded || this.isChoosingUpgrade) return;
     this.elapsedSeconds += delta / 1000;
     const direction = this.inputController.directionFrom(this.player.x, this.player.y);
-    this.player.move(direction.x, direction.y);
+    this.player.move(direction.x, direction.y, delta);
     this.grid.tilePositionX += delta * 0.006;
     this.grid.tilePositionY += delta * 0.009;
     this.enemies.push(...this.spawner.update(time, this.elapsedSeconds));
-    const playerPoint = new Phaser.Math.Vector2(this.player.x, this.player.y);
     this.enemies.forEach((enemy) => {
       if (!enemy.active) return;
-      enemy.chase(playerPoint);
-      if (Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y) < enemy.displayWidth * 0.42 + 15)
-        this.hitPlayer(enemy, time);
+      enemy.chase(this.player.x, this.player.y, delta, time);
+      const contactDistance = enemy.displayWidth * 0.42 + 15;
+      const offsetX = enemy.x - this.player.x;
+      const offsetY = enemy.y - this.player.y;
+      if (offsetX * offsetX + offsetY * offsetY < contactDistance * contactDistance) this.hitPlayer(enemy, time);
     });
     this.autoBolt.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
     this.orbitBlade.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
@@ -189,9 +190,10 @@ export class GameScene extends Phaser.Scene {
 
   private damageEnemy(enemy: Enemy, amount: number): void {
     if (!enemy.active) return;
-    enemy.setTintFill(0xffffff);
-    this.time.delayedCall(45, () => enemy.active && enemy.clearTint());
-    if (!enemy.damage(amount)) return;
+    if (!enemy.damage(amount)) {
+      enemy.showHitFeedback(this.time.now, this.player.x, this.player.y);
+      return;
+    }
     this.kills += 1;
     this.experience.drop(enemy.x, enemy.y, enemy.xpValue);
     burst(

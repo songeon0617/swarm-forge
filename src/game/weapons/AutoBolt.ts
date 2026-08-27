@@ -4,7 +4,7 @@ import type { Player } from '../entities/Player';
 import type { WeaponStats } from '../survivalTypes';
 
 interface Bolt {
-  sprite: Phaser.GameObjects.Arc;
+  sprite: Phaser.GameObjects.Rectangle;
   target: Enemy;
   damage: number;
 }
@@ -36,7 +36,8 @@ export class AutoBolt {
       for (let index = 0; index < this.stats.boltCount; index += 1) {
         const target = sorted[index % sorted.length];
         const sprite = this.scene.add
-          .circle(player.x, player.y, 4, 0x52f6ff, 1)
+          .rectangle(player.x, player.y, 12, 5, 0x52f6ff, 1)
+          .setStrokeStyle(1, 0xffffff, 0.85)
           .setDepth(25)
           .setBlendMode(Phaser.BlendModes.ADD);
         this.bolts.push({ sprite, target, damage: this.stats.boltDamage });
@@ -50,11 +51,15 @@ export class AutoBolt {
         this.bolts.splice(index, 1);
         continue;
       }
-      const angle = Phaser.Math.Angle.Between(bolt.sprite.x, bolt.sprite.y, bolt.target.x, bolt.target.y);
-      const step = (this.stats.boltSpeed * delta) / 1000;
+      const offsetX = bolt.target.x - bolt.sprite.x;
+      const offsetY = bolt.target.y - bolt.sprite.y;
+      const distance = Math.hypot(offsetX, offsetY);
+      const angle = Math.atan2(offsetY, offsetX);
+      const step = Math.min((this.stats.boltSpeed * delta) / 1000, distance);
       bolt.sprite.x += Math.cos(angle) * step;
       bolt.sprite.y += Math.sin(angle) * step;
-      if (Phaser.Math.Distance.Between(bolt.sprite.x, bolt.sprite.y, bolt.target.x, bolt.target.y) < 14) {
+      bolt.sprite.rotation = angle;
+      if (distance <= Math.max(14, step)) {
         onHit(bolt.target, bolt.damage);
         bolt.sprite.destroy();
         this.bolts.splice(index, 1);

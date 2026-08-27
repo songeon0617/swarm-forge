@@ -38,7 +38,9 @@ export class OrbitBlade {
       blade.y = player.y + Math.sin(bladeAngle) * this.stats.bladeRadius;
       blade.rotation = bladeAngle + Math.PI / 2;
       enemies.forEach((enemy) => {
-        if (!enemy.active || Phaser.Math.Distance.Between(blade.x, blade.y, enemy.x, enemy.y) > 25) return;
+        const offsetX = enemy.x - blade.x;
+        const offsetY = enemy.y - blade.y;
+        if (!enemy.active || offsetX * offsetX + offsetY * offsetY > 25 * 25) return;
         if (time - (this.lastHits.get(enemy) ?? -Infinity) < SURVIVAL_BALANCE.orbitBlade.hitCooldownMs) return;
         this.lastHits.set(enemy, time);
         onHit(enemy, this.stats.bladeDamage);

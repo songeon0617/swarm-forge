@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
+import { SURVIVAL_BALANCE } from '../config/balance';
 
 type MovementKey = 'left' | 'right' | 'up' | 'down' | 'a' | 'd' | 'w' | 's';
 
 export class PlayerInputController {
   private readonly keys?: Record<MovementKey, Phaser.Input.Keyboard.Key>;
   private touchTarget?: Phaser.Math.Vector2;
+  private readonly direction = new Phaser.Math.Vector2();
   private enabled = true;
 
   private readonly onPointerDown = (pointer: Phaser.Input.Pointer): void => {
@@ -38,7 +40,7 @@ export class PlayerInputController {
   }
 
   directionFrom(playerX: number, playerY: number): Phaser.Math.Vector2 {
-    if (!this.enabled) return new Phaser.Math.Vector2();
+    if (!this.enabled) return this.direction.set(0, 0);
     let x = 0;
     let y = 0;
     if (this.keys) {
@@ -46,14 +48,16 @@ export class PlayerInputController {
       y = Number(this.keys.down.isDown || this.keys.s.isDown) - Number(this.keys.up.isDown || this.keys.w.isDown);
     }
     if (x === 0 && y === 0 && this.touchTarget) {
-      const distance = Phaser.Math.Distance.Between(playerX, playerY, this.touchTarget.x, this.touchTarget.y);
-      if (distance > 12) {
-        const angle = Phaser.Math.Angle.Between(playerX, playerY, this.touchTarget.x, this.touchTarget.y);
-        x = Math.cos(angle);
-        y = Math.sin(angle);
+      const offsetX = this.touchTarget.x - playerX;
+      const offsetY = this.touchTarget.y - playerY;
+      const distanceSquared = offsetX * offsetX + offsetY * offsetY;
+      if (distanceSquared > SURVIVAL_BALANCE.player.touchDeadZone ** 2) {
+        const inverseDistance = 1 / Math.sqrt(distanceSquared);
+        x = offsetX * inverseDistance;
+        y = offsetY * inverseDistance;
       }
     }
-    return new Phaser.Math.Vector2(x, y);
+    return this.direction.set(x, y);
   }
 
   setEnabled(enabled: boolean): void {

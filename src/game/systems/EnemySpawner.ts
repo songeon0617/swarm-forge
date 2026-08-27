@@ -28,15 +28,15 @@ export class EnemySpawner {
       const type = chooseEnemyType(elapsedSeconds, this.random());
       const base = SURVIVAL_ENEMIES[type];
       const point = this.spawnPoint(index, this.random);
-      spawned.push(
-        new Enemy(this.scene, point.x, point.y, type, {
-          hp: Math.round(base.hp * difficulty.hpMultiplier),
-          speed: base.speed * difficulty.speedMultiplier,
-          damage: base.damage,
-          xp: base.xp,
-          radius: base.radius,
-        }),
-      );
+      const enemy = new Enemy(this.scene, point.x, point.y, type, {
+        hp: Math.round(base.hp * difficulty.hpMultiplier),
+        speed: base.speed * difficulty.speedMultiplier,
+        damage: base.damage,
+        xp: base.xp,
+        radius: base.radius,
+      });
+      enemy.playSpawnIntro();
+      spawned.push(enemy);
     }
     return spawned;
   }

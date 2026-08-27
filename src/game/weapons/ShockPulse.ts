@@ -14,9 +14,11 @@ export class ShockPulse {
   update(time: number, player: Player, enemies: Enemy[], onHit: (enemy: Enemy, damage: number) => void): void {
     if (time - this.lastPulseAt < this.stats.pulseCooldownMs) return;
     this.lastPulseAt = time;
+    const radiusSquared = this.stats.pulseRadius * this.stats.pulseRadius;
     enemies.forEach((enemy) => {
-      if (enemy.active && Phaser.Math.Distance.Between(player.x, player.y, enemy.x, enemy.y) <= this.stats.pulseRadius)
-        onHit(enemy, this.stats.pulseDamage);
+      const offsetX = enemy.x - player.x;
+      const offsetY = enemy.y - player.y;
+      if (enemy.active && offsetX * offsetX + offsetY * offsetY <= radiusSquared) onHit(enemy, this.stats.pulseDamage);
     });
     const ring = this.scene.add
       .circle(player.x, player.y, 18, 0x6d7dff, 0.05)
