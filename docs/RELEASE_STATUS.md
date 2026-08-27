@@ -19,6 +19,7 @@
 
 - Made the victory headline read the centralized run duration rather than duplicating a hard-coded value.
 - Added `pnpm preview` and the combined `pnpm validate` release check.
+- Updated GitHub Pages actions to their Node 24-compatible major versions.
 - Updated public-beta status, setup, validation, limitations, and HOLD / DATA COLLECTION guidance.
 - Corrected stale architecture/status documentation.
 
