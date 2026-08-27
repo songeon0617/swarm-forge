@@ -1,6 +1,12 @@
 import Phaser from 'phaser';
 
-function make(scene: Phaser.Scene, key: string, width: number, height: number, draw: (graphics: Phaser.GameObjects.Graphics) => void): void {
+function make(
+  scene: Phaser.Scene,
+  key: string,
+  width: number,
+  height: number,
+  draw: (graphics: Phaser.GameObjects.Graphics) => void,
+): void {
   if (scene.textures.exists(key)) return;
   const graphics = scene.add.graphics();
   draw(graphics);
@@ -61,9 +67,36 @@ export function createGameTextures(scene: Phaser.Scene): void {
     g.lineStyle(6, 0x7e184d, 1);
     for (let i = 0; i < 8; i += 1) {
       const angle = (i / 8) * Math.PI * 2;
-      g.lineBetween(66 + Math.cos(angle) * 44, 66 + Math.sin(angle) * 44, 66 + Math.cos(angle) * 61, 66 + Math.sin(angle) * 61);
+      g.lineBetween(
+        66 + Math.cos(angle) * 44,
+        66 + Math.sin(angle) * 44,
+        66 + Math.cos(angle) * 61,
+        66 + Math.sin(angle) * 61,
+      );
     }
     g.fillStyle(0xffe2ee, 1).fillCircle(66, 66, 13);
     g.fillStyle(0xff276e, 1).fillCircle(66, 66, 7);
+  });
+  make(scene, 'survivor-player', 36, 36, (g) => {
+    g.fillStyle(0x1cf2ff, 0.18).fillCircle(18, 18, 17);
+    g.fillStyle(0x09243a, 1).fillTriangle(18, 2, 4, 31, 18, 26).fillTriangle(18, 2, 32, 31, 18, 26);
+    g.lineStyle(2, 0x72faff, 1).strokeTriangle(18, 2, 4, 31, 18, 26).strokeTriangle(18, 2, 32, 31, 18, 26);
+    g.fillStyle(0xe8ffff, 1).fillCircle(18, 16, 4);
+  });
+  make(scene, 'survivor-grunt', 34, 34, (g) => {
+    g.fillStyle(0x3a0a20, 1).fillCircle(17, 17, 13);
+    g.lineStyle(3, 0xff3b78, 1).strokeCircle(17, 17, 13);
+    g.fillStyle(0xffd4e1, 1).fillCircle(17, 17, 4);
+  });
+  make(scene, 'survivor-runner', 30, 34, (g) => {
+    g.fillStyle(0x351033, 1).fillTriangle(15, 1, 2, 30, 28, 30);
+    g.lineStyle(3, 0xff61e6, 1).strokeTriangle(15, 1, 2, 30, 28, 30);
+    g.fillStyle(0xffe6fb, 1).fillCircle(15, 18, 3);
+  });
+  make(scene, 'survivor-tank', 52, 52, (g) => {
+    g.fillStyle(0x351408, 1).fillRoundedRect(4, 4, 44, 44, 9);
+    g.lineStyle(4, 0xff7b31, 1).strokeRoundedRect(4, 4, 44, 44, 9);
+    g.fillStyle(0xffd080, 1).fillRect(19, 16, 14, 20);
+    g.lineStyle(3, 0xff7b31, 1).lineBetween(7, 12, 45, 40).lineBetween(45, 12, 7, 40);
   });
 }

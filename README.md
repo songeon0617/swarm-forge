@@ -1,50 +1,78 @@
 # SWARM FORGE
 
-SWARM FORGE is a short-session portrait arcade strategy runner. Steer a tiny futuristic drone squad through capsules, mathematical gates, tactical upgrades, hazards, and enemy formations; turn it into an overwhelming mixed swarm; then melt the Null Foundry boss.
+SWARM FORGE is a portrait-first, 90-second browser survival roguelite. Move a neon combat core through an enclosing swarm while three weapons fire automatically, collect experience from destroyed enemies, and choose one of three upgrades whenever you level up. Survive until the timer reaches zero to win.
 
-The v0.1 run is finite, semi-procedural, and designed to last roughly 60–90 seconds. It is an original zero-cost HTML5 game built entirely with procedural graphics and synthesized sound.
+The MVP runs entirely in the browser with procedural placeholder graphics. It has no backend, accounts, paid services, analytics, or external asset requirements.
 
 ## Controls
 
-- Touch: drag horizontally.
-- Mouse: move or drag horizontally over the game.
-- Keyboard: A/D or Left/Right.
-- Weapons fire automatically. The top-right sound control mutes all generated audio.
+- Keyboard: WASD or Arrow keys
+- Touch/pointer: press or drag toward the desired movement direction
+- Weapons fire automatically
 
-For the best experience, play in portrait orientation. Landscape phones show a rotate-device message.
+## Gameplay loop
 
-## Install and develop
+1. Grunts begin spawning and chasing the player.
+2. Auto Bolt targets the nearest enemy, Orbit Blade damages nearby enemies, and Shock Pulse clears an area periodically.
+3. Defeated enemies drop visible XP orbs that attract inside the pickup radius.
+4. Leveling pauses the game and presents three randomized, mutually exclusive upgrades.
+5. Runners enter around 30 seconds; Tanks enter around 60 seconds.
+6. Spawn frequency, enemy health, enemy speed, and pack size rise toward a dangerous final 15 seconds.
+7. Reach 90 seconds to win, or lose all core HP to end the run. `RUN AGAIN` restarts immediately.
 
-Requires a current Node.js LTS release and pnpm.
+## Development
+
+Requires Node.js and pnpm.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-The development server prints a local URL. Open it at a portrait viewport such as 390 × 844.
+Open the local URL printed by Vite. The primary test viewport is 390 × 844.
 
 ## Validation commands
 
 ```bash
-pnpm test
+pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
 ```
 
-The deterministic tests cover swarm arithmetic, gate quality, upgrade conversion, seeded stage structure, difficulty ramping, and local persistence. Rendering is verified through browser playtesting rather than fragile scene snapshots.
+The production output is written to `dist/` and can be deployed as static files to itch.io, GitHub Pages, or Cloudflare Pages.
 
-## Static deployment
+## Architecture summary
 
-`pnpm build` creates `dist/`. Vite uses a relative base path, so the same folder works when uploaded to itch.io as an HTML5 ZIP or served by GitHub Pages or Cloudflare Pages. There is no server-side component.
+- `src/game/scenes/GameScene.ts` coordinates the run, input, HUD, level-up overlay, end states, and restart.
+- `src/game/entities/Player.ts` owns player movement, HP, invulnerability, and base stats.
+- `src/game/enemies/Enemy.ts` implements shared chase and damage behavior for Grunt, Runner, and Tank.
+- `src/game/weapons/` contains independent Auto Bolt, Orbit Blade, and Shock Pulse modules.
+- `src/game/systems/` contains spawning, difficulty, XP collection, XP progression, and run outcome rules.
+- `src/game/upgrades/SurvivalUpgradeSystem.ts` owns the reusable upgrade pool, deterministic selection logic, level caps, and effects.
+- `src/game/config/balance.ts` centralizes player, weapon, enemy, spawn, and run-duration tuning.
+- `src/game/render/` contains procedural textures and bounded feedback effects.
 
-- itch.io: ZIP the contents of `dist/`, create an HTML project, and select “This file will be played in the browser.”
-- GitHub Pages: publish `dist/` with a Pages workflow or static deployment action.
-- Cloudflare Pages: build command `pnpm build`; output directory `dist`.
+Pure calculations are kept independent from Phaser where practical, allowing deterministic Vitest coverage for XP requirements, upgrade selection, difficulty phases, and victory/defeat rules.
 
-## Zero-cost architecture
+## Current MVP scope
 
-The game needs no account, backend, database, network API, analytics product, hosted asset, paid font, or commercial media. Phaser, TypeScript, Vite, Vitest, and ESLint are free/open-source dependencies. Art is generated at runtime with Phaser Graphics. Sound is synthesized locally with the Web Audio API. Best score, largest swarm, victories, and settings live only in browser storage. Production output is static files.
+- Smooth eight-direction keyboard movement and basic touch movement
+- 90-second timer, victory, death, and restart
+- Three escalating enemy archetypes
+- Three modular automatic weapons
+- XP drops, magnetic pickup, leveling, and paused three-choice upgrades
+- Ten reusable upgrades with maximum levels
+- Readable portrait HUD for HP, XP, level, time, and weapon state
+- Procedural neon placeholder visuals and lightweight feedback
 
-See [PROJECT_MAP.md](./PROJECT_MAP.md) for the implementation map and [PROJECT_STATUS.md](./PROJECT_STATUS.md) for current product status.
+## Future improvement ideas
+
+- Tune enemy pressure and XP pacing through repeated full-run playtests
+- Improve hit audio and combat readability without increasing visual noise
+- Add stronger formation motion and escalation cues during the final 15 seconds
+- Pool transient projectiles and effects if mobile profiling shows allocation pressure
+- Add accessibility options such as reduced shake and larger UI text
+
+Do not add monetization, advertisements, accounts, permanent progression, bosses, weapon evolutions, or backend services until the core survival loop has been validated.

@@ -2,60 +2,35 @@
 
 ## Milestone
 
-MVP v0.1 — complete and validated.
+90-second survival roguelite MVP implemented and validated.
 
-## Current decision
+## Completed
 
-`GO`
+- Portrait client-side Phaser game with WASD, Arrow keys, and basic pointer/touch movement.
+- Player HP, movement, experience, levels, invulnerability, death, victory, and immediate restart.
+- Grunt, Runner, and Tank enemies with staged introduction and increasing pressure.
+- Modular Auto Bolt, Orbit Blade, and Shock Pulse weapons.
+- Visible XP drops, attraction, collection, increasing level requirements, and paused level-up flow.
+- Three randomized unique upgrade cards with a guarded, mutually exclusive selection path.
+- Ten upgrades covering weapon damage, speed, count/radius, player speed, HP, and XP pickup range.
+- Readable HP, XP, level, timer, and weapon HUD.
+- Deterministic tests for XP progression, upgrade selection, difficulty scaling, and run outcomes.
+- Static zero-cost build with procedural visuals and no backend or external assets.
 
-The creator manually played the current build and considers the core concept acceptable and worth continuing.
+## Validation
 
-## Human playtest findings
+- Browser smoke-tested at 390 × 844: touch movement, enemy pursuit, automatic attacks, XP collection, level-up pause, one-of-three upgrade application, and gameplay resume.
+- Selecting `EXTRA BLADE` increased only Orbit Blade from one to two and dismissed all cards.
+- Browser console remained free of warnings and errors during the test.
+- TypeScript, ESLint, Vitest, and production build validation pass.
 
-- The core concept is acceptable.
-- Gameplay needs a substantially more dynamic moment-to-moment presentation. Future work should focus on spectacle, pacing, movement, combat intensity, camera and formation motion, and visual escalation inspired by highly dynamic mobile-ad presentation.
-- Tactical upgrade/item choices must enforce mutually exclusive selection: only one of the two presented choices may be obtained.
-- Both choices can currently activate in some runs. This both-choice collection bug is the highest-priority functional issue for the next session.
+## Remaining MVP weaknesses
 
-## Next-session priority
+- A complete human-played 90-second balance sample is still needed; automated rules verify the deadline but cannot judge fun or fairness.
+- Combat currently uses procedural placeholder graphics and no dedicated sound pass.
+- Enemy avoidance may be too easy early and too abrupt late until spawn, XP, and damage curves receive several full-run samples.
+- Transient bolts and effects are bounded but not pooled; profile on ordinary mobile hardware before increasing density.
 
-1. Fix mutually exclusive tactical choice selection.
-2. Add a focused dynamic ad-style action pass.
-3. Re-test five consecutive runs.
-4. Only after that consider additional content.
+## Best next iteration
 
-Do not add monetization, ads, backend services, accounts, or paid services during this work.
-
-## Completed features
-
-- Portrait responsive canvas with touch, mouse, and keyboard steering.
-- Immediate start, capsule gain, four mathematical gates, two tactical upgrade choices, hazards, four escalating enemy waves, and a boss.
-- Rifle and laser composition, automatic target acquisition, aggregate volleys, enemy contact/ranged damage, failure, results, best score, and fast restart.
-- Seeded variation in lane placement, hazard routing, and gate choice order/values.
-- Procedural neon graphics, formation animation, tracers, particles, shake/flash restraint, and synthesized sound with mute.
-- Bounded rendered swarm and short-lived visual effects for mobile performance.
-- Deterministic logic test suite and static Vite deployment.
-
-## Validation completed
-
-- 13 deterministic tests pass across five suites.
-- ESLint, TypeScript typecheck, and the production Vite build pass.
-- A full 390 × 844 browser run was played through: capsule, gates, quality choice, mixed combat, hazards, boss, results, and instant restart.
-- Browser console remained free of warnings and errors throughout the timed run.
-- The playtest prompted and verified fixes for capsule-aware gate estimates, formation edge bounds, tactical-card typography, and boss durability/retaliation.
-
-## Known gameplay concerns
-
-- Balance is tuned heuristically and needs repeated human runs across intentionally weak and strong route choices.
-- Aggregate volleys make very large late swarms intentionally explosive; boss time-to-kill may need adjustment after retention testing.
-- Mouse steering follows hover, while touch follows an active drag; trackpad behavior varies slightly by browser.
-
-## Performance risks
-
-- Short-lived tracers and burst circles are allocated on demand, but bounded by fire cadence and event size. A future long-session mode would need explicit pools.
-- The WebGL additive blend path is preferred; Canvas fallback is functional but visually flatter.
-- The Phaser bundle is the dominant output size. No runtime network request or downloaded asset is required.
-
-## Next recommended playtest
-
-Run five consecutive portrait sessions at 390 × 844: pick quantity twice, quality twice, then alternate choices. Record first-gate comprehension, swarm count at the boss, boss time-to-kill, any zero-swarm failures, and whether RUN AGAIN is pressed within three seconds. The immediate tuning question is whether lasers feel strategically distinct before their compounding benefit becomes obvious at later multiplication gates.
+Play five complete runs at 390 × 844 and record death time, level at 30/60/90 seconds, upgrade selections, peak enemy count, and final-15-second readability. Use those measurements for a focused game-feel and balance pass before adding content.

@@ -1,38 +1,31 @@
 # Project Map
 
-## What happens in a run
+## Run flow
 
-`GameScene` starts the swarm immediately, projects a finite course toward the player, routes input into horizontal formation movement, resolves choices and hazards, selects combat targets, and presents the boss/results flow. `stageGenerator.ts` supplies the seeded course rhythm, so lane placement and gate ordering vary while the designed escalation remains intact.
+`GameScene` creates the player, weapon modules, enemy spawner, XP system, HUD, and input. Each active frame advances the 90-second clock, moves the player, spawns and chases enemies, updates all automatic weapons, attracts XP, and evaluates victory or defeat. Level-up pauses both the clock and Arcade Physics until one upgrade card is selected.
 
-## Main locations
+## Responsibilities
 
-- `src/main.ts` — Phaser bootstrap and responsive 390 × 844 virtual canvas.
-- `src/game/scenes/GameScene.ts` — run orchestration, input, encounter resolution, combat timing, HUD, boss, and results.
-- `src/game/config/balance.ts` — movement speed, drone damage/fire rates, formation limits, enemy stats, and playfield dimensions.
-- `src/game/progression/` — seeded randomness and complete stage generation.
-- `src/game/swarm/` — authoritative logical counts plus formation point calculation.
-- `src/game/gates/` — gate result arithmetic and context-aware gate-pair generation.
-- `src/game/upgrades/` — quantity/quality option generation and rifle-to-laser transformations.
-- `src/game/render/` — procedural textures, formation view, tracers, bursts, and floating feedback.
-- `src/game/audio/` — original Web Audio oscillator effects; no downloaded sound files.
-- `src/game/persistence/` — defensive local best-run storage.
+- `src/main.ts` — Phaser bootstrap, portrait scaling, and zero-gravity Arcade Physics.
+- `src/game/config/balance.ts` — all primary player, weapon, enemy, spawn, and run-duration tuning.
+- `src/game/scenes/GameScene.ts` — system orchestration, input, collisions, HUD, choice UI, results, and restart.
+- `src/game/entities/Player.ts` — movement, HP, invulnerability, and mutable player stats.
+- `src/game/enemies/Enemy.ts` — shared enemy state, pursuit, HP, and contact damage.
+- `src/game/weapons/AutoBolt.ts` — nearest-target projectile weapon.
+- `src/game/weapons/OrbitBlade.ts` — player-centered orbiting contact weapon.
+- `src/game/weapons/ShockPulse.ts` — periodic area damage weapon.
+- `src/game/systems/EnemySpawner.ts` — bounded off-screen spawning and pack creation.
+- `src/game/systems/Difficulty.ts` — deterministic pacing curve and enemy-type selection rules.
+- `src/game/systems/ExperienceSystem.ts` — XP drops, attraction, and collection visuals.
+- `src/game/systems/XpProgression.ts` — Phaser-independent XP requirement formula.
+- `src/game/systems/RunRules.ts` — Phaser-independent victory and defeat rules.
+- `src/game/upgrades/SurvivalUpgradeSystem.ts` — upgrade definitions, unique three-choice selection, caps, and application.
+- `src/game/render/` — generated placeholder textures and short-lived effects.
 
-## Swarm state and formation
+## Performance model
 
-`SwarmState` owns logical rifle and laser counts. The logical count can grow freely. `SwarmView` draws at most 48 drones, distributes them in stable rows, and adjusts the visible laser ratio to match the logical composition. This makes swarm growth readable without turning 100 logical units into 100 heavyweight objects.
+Enemy count is capped at 125. Auto Bolt uses short-lived logical projectiles, Orbit Blade uses only its current blade count, Shock Pulse applies aggregate area damage, and visual bursts self-destruct quickly. There is no body or projectile per logical swarm unit and no external asset loading.
 
-## Gates and upgrades
+## Main tuning locations
 
-Gate generation compares the immediate gain from addition and multiplication and keeps the alternatives within a useful range. Addition adds baseline rifle drones; multiplication preserves and scales the full composition, which makes earlier laser investment improve future multipliers. Upgrade choices explicitly trade more rifles against converting 25–30% of the current swarm into stronger, slower laser drones.
-
-## Combat
-
-The scene performs lightweight target queries in front of the formation. Rifle and laser volleys are aggregate logical damage events with brief procedural tracers, rather than per-drone physics bullets. Grunts, heavies, turrets, capsules, and the boss use a small runtime record and a few display objects each. Turrets fire back; other enemies deal damage on contact and can be dodged.
-
-## Stage generation
-
-`generateStage(seed)` fixes the pacing beats but varies choice ordering, lanes, hazard sides, and some gate values. Difficulty rises through larger mixed formations and health scaling. A run reaches the boss at distance 4680; at 64 distance units per second, preparation takes about 73 seconds before the short boss lock.
-
-## Tuning
-
-Start with `src/game/config/balance.ts` for global feel. Adjust event distances, capsule values, encounter composition, and boss placement in `src/game/progression/stageGenerator.ts`. Adjust meaningful gate closeness in `src/game/gates/gateLogic.ts`, and quantity/quality offers in `src/game/upgrades/upgradeLogic.ts`.
+Start in `src/game/config/balance.ts`. Difficulty interpolation and phase thresholds live in `src/game/systems/Difficulty.ts`; upgrade descriptions and maximum levels live in `src/game/upgrades/SurvivalUpgradeSystem.ts`.

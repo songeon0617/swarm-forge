@@ -26,3 +26,23 @@ export const ENEMY_STATS = {
   turret: { hp: 22, damage: 2, radius: 17 },
   boss: { hp: 1600, damage: 5, radius: 55 },
 } as const;
+
+export const SURVIVAL_BALANCE = {
+  runSeconds: 90,
+  player: {
+    maxHp: 100,
+    speed: 220,
+    invulnerabilityMs: 550,
+    pickupRadius: 58,
+  },
+  autoBolt: { damage: 12, cooldownMs: 520, speed: 520, projectileCount: 1, maxLevel: 5 },
+  orbitBlade: { damage: 9, count: 1, rotationSpeed: 2.1, radius: 58, hitCooldownMs: 380, maxLevel: 5 },
+  shockPulse: { damage: 18, cooldownMs: 3600, radius: 105, maxLevel: 5 },
+  spawn: { startIntervalMs: 920, endIntervalMs: 210, maxEnemies: 125 },
+} as const;
+
+export const SURVIVAL_ENEMIES = {
+  grunt: { hp: 18, speed: 52, damage: 10, xp: 5, radius: 14, unlockAt: 0 },
+  runner: { hp: 14, speed: 102, damage: 8, xp: 7, radius: 11, unlockAt: 28 },
+  tank: { hp: 78, speed: 36, damage: 18, xp: 18, radius: 23, unlockAt: 58 },
+} as const;
