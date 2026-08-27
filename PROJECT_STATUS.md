@@ -4,6 +4,28 @@
 
 MVP v0.1 — complete and validated.
 
+## Current decision
+
+`GO`
+
+The creator manually played the current build and considers the core concept acceptable and worth continuing.
+
+## Human playtest findings
+
+- The core concept is acceptable.
+- Gameplay needs a substantially more dynamic moment-to-moment presentation. Future work should focus on spectacle, pacing, movement, combat intensity, camera and formation motion, and visual escalation inspired by highly dynamic mobile-ad presentation.
+- Tactical upgrade/item choices must enforce mutually exclusive selection: only one of the two presented choices may be obtained.
+- Both choices can currently activate in some runs. This both-choice collection bug is the highest-priority functional issue for the next session.
+
+## Next-session priority
+
+1. Fix mutually exclusive tactical choice selection.
+2. Add a focused dynamic ad-style action pass.
+3. Re-test five consecutive runs.
+4. Only after that consider additional content.
+
+Do not add monetization, ads, backend services, accounts, or paid services during this work.
+
 ## Completed features
 
 - Portrait responsive canvas with touch, mouse, and keyboard steering.
