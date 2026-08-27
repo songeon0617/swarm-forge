@@ -4,6 +4,8 @@ SWARM FORGE v0.3 is a portrait-first, 90-second browser survival game. Move a ne
 
 The game runs entirely in the browser with cohesive procedural graphics and generated Web Audio effects. It has no backend, accounts, paid services, analytics, or external asset requirements.
 
+**Status:** Experimental public beta. The current v0.3 build is release-frozen and entering HOLD / DATA COLLECTION. Maintenance should focus on release-blocking defects and evidence from full-run playtests rather than new feature work.
+
 ## Live demo
 
 Play the current public build at [songeon0617.github.io/swarm-forge](https://songeon0617.github.io/swarm-forge/). Portrait orientation is recommended on mobile.
@@ -26,9 +28,10 @@ Play the current public build at [songeon0617.github.io/swarm-forge](https://son
 
 ## Development
 
-Requires Node.js and pnpm.
+Requires Node.js 22 (the version used by CI) and pnpm 11.19.0. Corepack can activate the package-manager version pinned in `package.json`.
 
 ```bash
+corepack enable
 pnpm install
 pnpm dev
 ```
@@ -38,14 +41,18 @@ Open the local URL printed by Vite. The primary test viewport is 390 × 844.
 ## Validation commands
 
 ```bash
-pnpm format:check
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+pnpm validate
 ```
 
-The production output is written to `dist/` and can be deployed as static files to itch.io, GitHub Pages, or Cloudflare Pages.
+The combined command runs formatting checks, lint, strict TypeScript checking, all unit tests, and the production build. Each step can also be run independently with `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, or `pnpm build`.
+
+The production output is written to `dist/`. To serve that build locally:
+
+```bash
+pnpm preview
+```
+
+The static output can be deployed to itch.io, GitHub Pages, or Cloudflare Pages without a backend.
 
 ## Deployment
 
@@ -78,11 +85,11 @@ Pure calculations are kept independent from Phaser where practical, allowing det
 - Readable portrait HUD for HP, XP, level, time, and weapon state
 - Cohesive procedural silhouettes, bounded combat effects, and lightweight generated audio
 
-## Future improvement ideas
+## Known limitations
 
-- Tune enemy pressure and XP pacing through repeated real-device full-run playtests
-- Profile sustained 70–90 second pressure on lower-end Android hardware
-- Pool transient projectiles only if real-device profiling shows allocation pressure
-- Add accessibility options such as reduced shake and larger UI text
+- Balance and readability still need multiple complete real-device run samples.
+- Sustained 70–90 second pressure has not been profiled on lower-end Android hardware.
+- Visuals and audio are procedural and intentionally compact; there are no accessibility settings yet.
+- Transient projectiles and effects are bounded but not pooled; profiling should precede any density increase.
 
-Do not add monetization, advertisements, accounts, permanent progression, bosses, weapon evolutions, or backend services until the core survival loop has been validated.
+During HOLD / DATA COLLECTION, record full-run timing, level progression, upgrade choices, peak pressure, and late-run readability. Do not add monetization, advertisements, accounts, permanent progression, bosses, weapon evolutions, or backend services until the core survival loop has been validated.

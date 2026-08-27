@@ -2,7 +2,7 @@
 
 ## Milestone
 
-90-second survival roguelite MVP implemented and validated.
+Experimental v0.3 public beta release-frozen for HOLD / DATA COLLECTION.
 
 ## Completed
 
@@ -27,13 +27,13 @@
 ## Remaining MVP weaknesses
 
 - A complete human-played 90-second balance sample is still needed; automated rules verify the deadline but cannot judge fun or fairness.
-- Combat currently uses procedural placeholder graphics and no dedicated sound pass.
+- Combat uses compact procedural graphics and generated Web Audio rather than authored assets or accessibility controls.
 - Enemy avoidance may be too easy early and too abrupt late until spawn, XP, and damage curves receive several full-run samples.
 - Transient bolts and effects are bounded but not pooled; profile on ordinary mobile hardware before increasing density.
 
-## Best next iteration
+## Next recommended action
 
-Play five complete runs at 390 × 844 and record death time, level at 30/60/90 seconds, upgrade selections, peak enemy count, and final-15-second readability. Use those measurements for a focused game-feel and balance pass before adding content.
+Play five complete runs at 390 × 844 and record death time, level at 30/60/90 seconds, upgrade selections, peak enemy count, and final-15-second readability. Hold feature development until those measurements justify a focused game-feel or balance change.
 
 ## Architecture checkpoint
 

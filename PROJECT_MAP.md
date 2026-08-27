@@ -28,7 +28,7 @@
 
 ## Performance model
 
-Enemy count is capped at 125. Auto Bolt uses short-lived logical projectiles, Orbit Blade uses only its current blade count, Shock Pulse applies aggregate area damage, and visual bursts self-destruct quickly. There is no body or projectile per logical swarm unit and no external asset loading.
+Enemy count is capped at 110. Auto Bolt uses short-lived logical projectiles, Orbit Blade uses only its current blade count, Shock Pulse applies aggregate area damage, and visual bursts self-destruct quickly. There is no physics body per weapon projectile and no external asset loading.
 
 ## Main tuning locations
 

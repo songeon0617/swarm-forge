@@ -304,7 +304,7 @@ export class GameScene extends Phaser.Scene {
     const color = victory ? CYAN : MAGENTA;
     const panel = this.add.rectangle(0, 0, 330, 370, 0x07111f, 0.98).setStrokeStyle(3, color, 1);
     const title = this.add
-      .text(0, -132, victory ? '90 SEC SURVIVED' : 'CORE DESTROYED', {
+      .text(0, -132, victory ? `${SURVIVAL_BALANCE.runSeconds} SEC SURVIVED` : 'CORE DESTROYED', {
         fontFamily: 'Arial Black',
         fontSize: '24px',
         color: victory ? '#baffff' : '#ff9fbb',
