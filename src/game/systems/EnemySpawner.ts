@@ -20,7 +20,7 @@ export class EnemySpawner {
 
   update(time: number, elapsedSeconds: number): Enemy[] {
     if (time < this.nextSpawnAt || this.enemies.length >= SURVIVAL_BALANCE.spawn.maxEnemies) return [];
-    const difficulty = difficultyAt(elapsedSeconds);
+    const difficulty = difficultyAt(elapsedSeconds, this.random());
     this.nextSpawnAt = time + difficulty.spawnIntervalMs;
     const spawned: Enemy[] = [];
     for (let index = 0; index < difficulty.packSize; index += 1) {

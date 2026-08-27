@@ -16,4 +16,19 @@ describe('survival upgrade selection', () => {
     const choices = selectUpgradeChoices(levels, () => 0, 10);
     expect(choices.some((choice) => choice.id === 'boltDamage')).toBe(false);
   });
+
+  it('always offers one understandable defense unlock before its upgrades', () => {
+    const choices = selectUpgradeChoices(createUpgradeLevels(), () => 0.99);
+    expect(choices.some((choice) => choice.id === 'turretUnlock' || choice.id === 'mineUnlock')).toBe(true);
+    expect(choices.some((choice) => choice.id === 'turretDamage' || choice.id === 'turretSpeed')).toBe(false);
+    expect(choices.some((choice) => choice.id === 'mineDamage' || choice.id === 'mineCooldown')).toBe(false);
+  });
+
+  it('adds defense improvements after the matching unlock', () => {
+    const levels = createUpgradeLevels();
+    levels.turretUnlock = 1;
+    const choices = selectUpgradeChoices(levels, () => 0, 20);
+    expect(choices.some((choice) => choice.id === 'turretDamage')).toBe(true);
+    expect(choices.some((choice) => choice.id === 'turretSpeed')).toBe(true);
+  });
 });

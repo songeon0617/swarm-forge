@@ -16,9 +16,9 @@ function make(
 
 export function createGameTextures(scene: Phaser.Scene): void {
   make(scene, 'grid', 96, 96, (g) => {
-    g.fillStyle(0x071126, 1).fillRect(0, 0, 96, 96);
-    g.lineStyle(1, 0x164168, 0.32).lineBetween(0, 0, 96, 0).lineBetween(0, 0, 0, 96);
-    g.lineStyle(1, 0x0a2945, 0.18).lineBetween(48, 0, 48, 96).lineBetween(0, 48, 96, 48);
+    g.fillStyle(0x08101d, 1).fillRect(0, 0, 96, 96);
+    g.lineStyle(1, 0x244052, 0.22).lineBetween(0, 0, 96, 0).lineBetween(0, 0, 0, 96);
+    g.lineStyle(1, 0x172d3d, 0.14).lineBetween(48, 0, 48, 96).lineBetween(0, 48, 96, 48);
   });
   make(scene, 'drone-rifle', 32, 38, (g) => {
     g.fillStyle(0x00eaff, 0.14).fillCircle(16, 20, 14);
@@ -78,25 +78,47 @@ export function createGameTextures(scene: Phaser.Scene): void {
     g.fillStyle(0xff276e, 1).fillCircle(66, 66, 7);
   });
   make(scene, 'survivor-player', 36, 36, (g) => {
-    g.fillStyle(0x1cf2ff, 0.18).fillCircle(18, 18, 17);
-    g.fillStyle(0x09243a, 1).fillTriangle(18, 2, 4, 31, 18, 26).fillTriangle(18, 2, 32, 31, 18, 26);
-    g.lineStyle(2, 0x72faff, 1).strokeTriangle(18, 2, 4, 31, 18, 26).strokeTriangle(18, 2, 32, 31, 18, 26);
-    g.fillStyle(0xe8ffff, 1).fillCircle(18, 16, 4);
+    g.fillStyle(0x113449, 1).fillTriangle(18, 1, 3, 30, 18, 25).fillTriangle(18, 1, 33, 30, 18, 25);
+    g.lineStyle(3, 0x5cf5ff, 1).strokeTriangle(18, 1, 3, 30, 18, 25).strokeTriangle(18, 1, 33, 30, 18, 25);
+    g.fillStyle(0xeaffff, 1).fillCircle(18, 15, 4);
+    g.fillStyle(0x26c9dd, 1).fillTriangle(9, 27, 18, 34, 27, 27);
   });
   make(scene, 'survivor-grunt', 34, 34, (g) => {
-    g.fillStyle(0x3a0a20, 1).fillCircle(17, 17, 13);
+    g.fillStyle(0x3a0a20, 1).fillCircle(17, 18, 13);
     g.lineStyle(3, 0xff3b78, 1).strokeCircle(17, 17, 13);
-    g.fillStyle(0xffd4e1, 1).fillCircle(17, 17, 4);
+    g.fillStyle(0x3a0a20, 1).fillTriangle(5, 12, 11, 2, 14, 11).fillTriangle(20, 11, 23, 2, 29, 12);
+    g.lineStyle(2, 0xff3b78, 1).lineBetween(5, 12, 11, 2).lineBetween(23, 2, 29, 12);
+    g.fillStyle(0xffd4e1, 1).fillCircle(17, 18, 4);
   });
   make(scene, 'survivor-runner', 30, 34, (g) => {
-    g.fillStyle(0x351033, 1).fillTriangle(15, 1, 2, 30, 28, 30);
-    g.lineStyle(3, 0xff61e6, 1).strokeTriangle(15, 1, 2, 30, 28, 30);
-    g.fillStyle(0xffe6fb, 1).fillCircle(15, 18, 3);
+    g.fillStyle(0x351033, 1).fillTriangle(15, 0, 3, 25, 15, 20).fillTriangle(15, 0, 27, 25, 15, 20);
+    g.lineStyle(3, 0xff61e6, 1).strokeTriangle(15, 0, 3, 25, 15, 20).strokeTriangle(15, 0, 27, 25, 15, 20);
+    g.fillStyle(0xffe6fb, 1).fillCircle(15, 13, 3);
+    g.fillStyle(0xc22fa9, 1).fillTriangle(8, 25, 15, 33, 22, 25);
   });
   make(scene, 'survivor-tank', 52, 52, (g) => {
-    g.fillStyle(0x351408, 1).fillRoundedRect(4, 4, 44, 44, 9);
-    g.lineStyle(4, 0xff7b31, 1).strokeRoundedRect(4, 4, 44, 44, 9);
-    g.fillStyle(0xffd080, 1).fillRect(19, 16, 14, 20);
-    g.lineStyle(3, 0xff7b31, 1).lineBetween(7, 12, 45, 40).lineBetween(45, 12, 7, 40);
+    g.fillStyle(0x351408, 1).fillRoundedRect(3, 5, 46, 42, 6);
+    g.lineStyle(4, 0xff7b31, 1).strokeRoundedRect(3, 5, 46, 42, 6);
+    g.fillStyle(0x713119, 1).fillRect(8, 10, 7, 32).fillRect(37, 10, 7, 32);
+    g.fillStyle(0xffd080, 1).fillRect(20, 17, 12, 18);
+    g.lineStyle(3, 0xff7b31, 1).strokeRect(17, 14, 18, 24);
+  });
+  make(scene, 'survivor-bolt', 18, 8, (g) => {
+    g.fillStyle(0x8effff, 1).fillTriangle(0, 1, 18, 4, 0, 7);
+    g.fillStyle(0xffffff, 1).fillTriangle(8, 2, 18, 4, 8, 6);
+  });
+  make(scene, 'survivor-turret', 34, 34, (g) => {
+    g.fillStyle(0x142d23, 1).fillCircle(17, 19, 12);
+    g.lineStyle(3, 0xbaf45c, 1).strokeCircle(17, 19, 12);
+    g.fillStyle(0xeaffb6, 1).fillRect(14, 1, 6, 18);
+    g.fillStyle(0x6fae34, 1).fillCircle(17, 19, 5);
+    g.fillStyle(0x142d23, 1).fillTriangle(5, 28, 1, 34, 11, 31).fillTriangle(29, 28, 33, 34, 23, 31);
+  });
+  make(scene, 'survivor-mine', 28, 28, (g) => {
+    g.fillStyle(0x3a2610, 1).fillCircle(14, 14, 10);
+    g.lineStyle(3, 0xffbd42, 1).strokeCircle(14, 14, 10);
+    g.lineStyle(3, 0x9a6524, 1).lineBetween(14, 0, 14, 5).lineBetween(14, 23, 14, 28);
+    g.lineBetween(0, 14, 5, 14).lineBetween(23, 14, 28, 14);
+    g.fillStyle(0xfff0b3, 1).fillCircle(14, 14, 3);
   });
 }

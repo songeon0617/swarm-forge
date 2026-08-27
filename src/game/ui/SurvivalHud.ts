@@ -55,10 +55,10 @@ export class SurvivalHud {
       })
       .setOrigin(1, 0);
     this.weaponText = scene.add
-      .text(14, GAME_HEIGHT - 23, 'BOLT 1  •  BLADE 1  •  PULSE 1', {
+      .text(14, GAME_HEIGHT - 37, 'BOLT 1  •  ORBIT 1  •  PULSE 1', {
         fontFamily: 'Arial',
         fontStyle: 'bold',
-        fontSize: '10px',
+        fontSize: '11px',
         color: '#8ad6e8',
       })
       .setLetterSpacing(1);
@@ -86,7 +86,7 @@ export class SurvivalHud {
       .setText(`${String(Math.floor(remaining / 60)).padStart(2, '0')}:${String(remaining % 60).padStart(2, '0')}`)
       .setColor(remaining <= 15 ? '#ff7098' : '#ffffff');
     this.weaponText.setText(
-      `BOLT ${1 + levels.boltDamage + levels.boltSpeed + levels.boltCount}  •  BLADE ${weapons.bladeCount}  •  PULSE ${1 + levels.pulseDamage + levels.pulseRadius}`,
+      `BOLT ${weapons.boltCount}  •  ORBIT ${weapons.bladeCount}  •  PULSE ${1 + levels.pulseDamage + levels.pulseRadius}\nTURRET ${weapons.turretUnlocked ? 'ON' : '—'}  •  MINE ${weapons.mineUnlocked ? 'ON' : '—'}`,
     );
   }
 

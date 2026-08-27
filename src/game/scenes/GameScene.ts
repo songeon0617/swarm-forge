@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { SURVIVAL_BALANCE, SURVIVAL_LAYOUT, GAME_HEIGHT, GAME_WIDTH } from '../config/balance';
+import { AutoMine } from '../defense/AutoMine';
+import { AutoTurret } from '../defense/AutoTurret';
 import { Enemy } from '../enemies/Enemy';
 import { Player } from '../entities/Player';
 import { PlayerInputController } from '../input/PlayerInputController';
@@ -33,6 +35,8 @@ export class GameScene extends Phaser.Scene {
   private autoBolt!: AutoBolt;
   private orbitBlade!: OrbitBlade;
   private shockPulse!: ShockPulse;
+  private autoTurret!: AutoTurret;
+  private autoMine!: AutoMine;
   private inputController!: PlayerInputController;
   private hud!: SurvivalHud;
   private weaponStats!: WeaponStats;
@@ -74,6 +78,14 @@ export class GameScene extends Phaser.Scene {
       pulseDamage: SURVIVAL_BALANCE.shockPulse.damage,
       pulseCooldownMs: SURVIVAL_BALANCE.shockPulse.cooldownMs,
       pulseRadius: SURVIVAL_BALANCE.shockPulse.radius,
+      turretUnlocked: false,
+      turretDamage: SURVIVAL_BALANCE.autoTurret.damage,
+      turretCooldownMs: SURVIVAL_BALANCE.autoTurret.cooldownMs,
+      turretProjectileSpeed: SURVIVAL_BALANCE.autoTurret.projectileSpeed,
+      mineUnlocked: false,
+      mineDamage: SURVIVAL_BALANCE.mine.damage,
+      mineCooldownMs: SURVIVAL_BALANCE.mine.cooldownMs,
+      mineRadius: SURVIVAL_BALANCE.mine.radius,
     };
     this.upgradeLevels = createUpgradeLevels();
     this.enemies = [];
@@ -82,6 +94,8 @@ export class GameScene extends Phaser.Scene {
     this.autoBolt = new AutoBolt(this, this.weaponStats);
     this.orbitBlade = new OrbitBlade(this, this.weaponStats);
     this.shockPulse = new ShockPulse(this, this.weaponStats);
+    this.autoTurret = new AutoTurret(this, this.weaponStats);
+    this.autoMine = new AutoMine(this, this.weaponStats);
     this.inputController = new PlayerInputController(this);
     this.hud = new SurvivalHud(this);
     this.showOpeningPrompt();
@@ -92,24 +106,11 @@ export class GameScene extends Phaser.Scene {
   private createBackdrop(): void {
     this.grid = this.add.tileSprite(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 'grid').setDepth(-20);
     this.add.rectangle(GAME_WIDTH / 2, 39, GAME_WIDTH, 78, 0x020611, 0.96).setDepth(80);
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 6, GAME_WIDTH, 12, 0x020611, 0.96).setDepth(80);
-    for (let index = 0; index < 18; index += 1) {
-      const accent = this.add
-        .circle(
-          Phaser.Math.Between(20, 370),
-          Phaser.Math.Between(90, 820),
-          Phaser.Math.Between(1, 3),
-          index % 3 === 0 ? MAGENTA : CYAN,
-          0.22,
-        )
-        .setDepth(-10);
-      this.tweens.add({
-        targets: accent,
-        alpha: 0.65,
-        duration: Phaser.Math.Between(700, 1800),
-        yoyo: true,
-        repeat: -1,
-      });
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 23, GAME_WIDTH, 46, 0x020611, 0.96).setDepth(80);
+    this.add.rectangle(GAME_WIDTH - 24, GAME_HEIGHT / 2 + 28, 3, GAME_HEIGHT - 150, 0xff2d76, 0.12).setDepth(-9);
+    for (let index = 0; index < 7; index += 1) {
+      const y = 118 + index * 96;
+      this.add.triangle(GAME_WIDTH - 21, y, 0, 0, 12, 6, 0, 12, 0xff4f83, 0.14).setDepth(-9);
     }
   }
 
@@ -126,7 +127,7 @@ export class GameScene extends Phaser.Scene {
       .setDepth(100)
       .setLetterSpacing(2);
     const prompt = this.add
-      .text(GAME_WIDTH / 2, 158, 'MOVE • SURVIVE • EVOLVE', {
+      .text(GAME_WIDTH / 2, 158, 'DRAG TO MOVE  •  AUTO FIRE', {
         fontFamily: 'Arial',
         fontStyle: 'bold',
         fontSize: '12px',
@@ -167,6 +168,13 @@ export class GameScene extends Phaser.Scene {
     this.autoBolt.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
     this.orbitBlade.update(time, delta, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
     this.shockPulse.update(time, this.player, this.enemies, (enemy, damage) => this.damageEnemy(enemy, damage));
+    this.autoTurret.update(time, delta, this.player, this.enemies, (enemy, damage, sourceX, sourceY) =>
+      this.damageEnemy(enemy, damage, sourceX, sourceY),
+    );
+    this.autoMine.update(time, this.player, this.enemies, (enemy, damage, sourceX, sourceY) =>
+      this.damageEnemy(enemy, damage, sourceX, sourceY),
+    );
+    this.pruneDefeatedEnemies();
     const collectedXp = this.experience.update(this.player, delta);
     if (collectedXp > 0) {
       this.player.xp += collectedXp;
@@ -188,10 +196,10 @@ export class GameScene extends Phaser.Scene {
     enemy.setVelocity(-Math.cos(angle) * 95, -Math.sin(angle) * 95);
   }
 
-  private damageEnemy(enemy: Enemy, amount: number): void {
+  private damageEnemy(enemy: Enemy, amount: number, sourceX = this.player.x, sourceY = this.player.y): void {
     if (!enemy.active) return;
     if (!enemy.damage(amount)) {
-      enemy.showHitFeedback(this.time.now, this.player.x, this.player.y);
+      enemy.showHitFeedback(this.time.now, sourceX, sourceY);
       return;
     }
     this.kills += 1;
@@ -204,9 +212,13 @@ export class GameScene extends Phaser.Scene {
       enemy.enemyType === 'tank' ? 18 : 9,
       enemy.enemyType === 'tank' ? 68 : 38,
     );
-    const index = this.enemies.indexOf(enemy);
-    if (index >= 0) this.enemies.splice(index, 1);
-    enemy.destroy();
+    enemy.playDeath();
+  }
+
+  private pruneDefeatedEnemies(): void {
+    for (let index = this.enemies.length - 1; index >= 0; index -= 1) {
+      if (!this.enemies[index].active) this.enemies.splice(index, 1);
+    }
   }
 
   private checkLevelUp(): void {
@@ -310,6 +322,8 @@ export class GameScene extends Phaser.Scene {
   private cleanup(): void {
     this.autoBolt?.destroy();
     this.orbitBlade?.destroy();
+    this.autoTurret?.destroy();
+    this.autoMine?.destroy();
     this.experience?.destroy();
     this.inputController?.destroy();
     this.hud?.destroy();

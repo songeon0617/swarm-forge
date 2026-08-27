@@ -70,6 +70,42 @@ export const UPGRADE_POOL: UpgradeChoice[] = [
     description: 'XP pickup radius +25%',
     maxLevel: SURVIVAL_BALANCE.upgrades.defaultMaxLevel,
   },
+  {
+    id: 'turretUnlock',
+    title: 'AUTO TURRET',
+    description: 'Deploy a companion auto turret',
+    maxLevel: 1,
+  },
+  {
+    id: 'turretDamage',
+    title: 'TURRET CALIBER',
+    description: 'Turret damage +30%',
+    maxLevel: 3,
+  },
+  {
+    id: 'turretSpeed',
+    title: 'TURRET CYCLER',
+    description: 'Turret attack speed +20%',
+    maxLevel: 3,
+  },
+  {
+    id: 'mineUnlock',
+    title: 'BLAST MINE',
+    description: 'Auto-deploy contact mines',
+    maxLevel: 1,
+  },
+  {
+    id: 'mineDamage',
+    title: 'HEAVY CHARGE',
+    description: 'Mine damage +35%',
+    maxLevel: 3,
+  },
+  {
+    id: 'mineCooldown',
+    title: 'MINE PRINTER',
+    description: 'Mine deploy speed +20%',
+    maxLevel: 3,
+  },
 ];
 
 export function createUpgradeLevels(): UpgradeLevels {
@@ -84,7 +120,20 @@ export function createUpgradeLevels(): UpgradeLevels {
     moveSpeed: 0,
     maxHp: 0,
     pickupRadius: 0,
+    turretUnlock: 0,
+    turretDamage: 0,
+    turretSpeed: 0,
+    mineUnlock: 0,
+    mineDamage: 0,
+    mineCooldown: 0,
   };
+}
+
+function isUpgradeAvailable(upgrade: UpgradeChoice, levels: UpgradeLevels): boolean {
+  if (levels[upgrade.id] >= upgrade.maxLevel) return false;
+  if ((upgrade.id === 'turretDamage' || upgrade.id === 'turretSpeed') && levels.turretUnlock === 0) return false;
+  if ((upgrade.id === 'mineDamage' || upgrade.id === 'mineCooldown') && levels.mineUnlock === 0) return false;
+  return true;
 }
 
 export function selectUpgradeChoices(
@@ -92,9 +141,20 @@ export function selectUpgradeChoices(
   random: () => number = Math.random,
   count = 3,
 ): UpgradeChoice[] {
-  const candidates = UPGRADE_POOL.filter((upgrade) => levels[upgrade.id] < upgrade.maxLevel);
+  const candidates = UPGRADE_POOL.filter((upgrade) => isUpgradeAvailable(upgrade, levels));
   const result: UpgradeChoice[] = [];
   const remaining = [...candidates];
+  const lockedDefenseChoices = remaining.filter(
+    (upgrade) =>
+      (upgrade.id === 'turretUnlock' && levels.turretUnlock === 0) ||
+      (upgrade.id === 'mineUnlock' && levels.mineUnlock === 0),
+  );
+  if (count > 0 && lockedDefenseChoices.length > 0) {
+    const defenseIndex = Math.min(lockedDefenseChoices.length - 1, Math.floor(random() * lockedDefenseChoices.length));
+    const defense = lockedDefenseChoices[defenseIndex];
+    result.push(defense);
+    remaining.splice(remaining.indexOf(defense), 1);
+  }
   while (result.length < count && remaining.length > 0) {
     const index = Math.min(remaining.length - 1, Math.floor(random() * remaining.length));
     result.push(remaining.splice(index, 1)[0]);
@@ -140,6 +200,24 @@ export function applySurvivalUpgrade(
       break;
     case 'pickupRadius':
       player.stats.pickupRadius *= SURVIVAL_BALANCE.upgrades.pickupRadiusMultiplier;
+      break;
+    case 'turretUnlock':
+      weapons.turretUnlocked = true;
+      break;
+    case 'turretDamage':
+      weapons.turretDamage *= SURVIVAL_BALANCE.upgrades.turretDamageMultiplier;
+      break;
+    case 'turretSpeed':
+      weapons.turretCooldownMs *= SURVIVAL_BALANCE.upgrades.turretCooldownMultiplier;
+      break;
+    case 'mineUnlock':
+      weapons.mineUnlocked = true;
+      break;
+    case 'mineDamage':
+      weapons.mineDamage *= SURVIVAL_BALANCE.upgrades.mineDamageMultiplier;
+      break;
+    case 'mineCooldown':
+      weapons.mineCooldownMs *= SURVIVAL_BALANCE.upgrades.mineCooldownMultiplier;
       break;
   }
 }

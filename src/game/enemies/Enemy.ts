@@ -10,6 +10,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   readonly contactDamage: number;
   readonly xpValue: number;
   private hitFlashUntil = -Infinity;
+  private knockedBackUntil = -Infinity;
 
   constructor(
     scene: Phaser.Scene,
@@ -31,6 +32,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   chase(targetX: number, targetY: number, delta: number, time: number): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
+    if (time < this.knockedBackUntil) {
+      if (time >= this.hitFlashUntil && this.isTinted) this.clearTint();
+      return;
+    }
     const angle = Math.atan2(targetY - this.y, targetX - this.x);
     const clampedDelta = Math.min(delta, SURVIVAL_BALANCE.movement.maxDeltaMs);
     const velocityX = smoothResponse(
@@ -63,6 +68,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   showHitFeedback(time: number, sourceX: number, sourceY: number): void {
     this.hitFlashUntil = time + SURVIVAL_BALANCE.feedback.enemyHitFlashMs;
+    this.knockedBackUntil = time + SURVIVAL_BALANCE.feedback.enemyHitKnockbackMs;
     this.setTintFill(0xffffff);
     const angle = Math.atan2(this.y - sourceY, this.x - sourceX);
     this.setVelocity(
@@ -74,5 +80,20 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   damage(amount: number): boolean {
     this.hp -= amount;
     return this.hp <= 0;
+  }
+
+  playDeath(): void {
+    this.scene.tweens.killTweensOf(this);
+    this.disableBody(true, false);
+    this.setTintFill(0xffffff);
+    this.scene.tweens.add({
+      targets: this,
+      scale: 1.32,
+      alpha: 0,
+      angle: this.angle + 24,
+      duration: SURVIVAL_BALANCE.feedback.enemyDeathDurationMs,
+      ease: 'Quad.Out',
+      onComplete: () => this.destroy(),
+    });
   }
 }

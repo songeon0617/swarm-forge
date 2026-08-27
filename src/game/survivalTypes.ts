@@ -18,6 +18,14 @@ export interface WeaponStats {
   pulseDamage: number;
   pulseCooldownMs: number;
   pulseRadius: number;
+  turretUnlocked: boolean;
+  turretDamage: number;
+  turretCooldownMs: number;
+  turretProjectileSpeed: number;
+  mineUnlocked: boolean;
+  mineDamage: number;
+  mineCooldownMs: number;
+  mineRadius: number;
 }
 
 export interface UpgradeLevels {
@@ -31,4 +39,10 @@ export interface UpgradeLevels {
   moveSpeed: number;
   maxHp: number;
   pickupRadius: number;
+  turretUnlock: number;
+  turretDamage: number;
+  turretSpeed: number;
+  mineUnlock: number;
+  mineDamage: number;
+  mineCooldown: number;
 }
